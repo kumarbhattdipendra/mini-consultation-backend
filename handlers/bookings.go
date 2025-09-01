@@ -70,11 +70,19 @@ func (h *BookingHandler) CreateBooking(context *gin.Context) {
 		Datetime: slot,
 		Status:   "pending",
 		Notes:    req.Notes,
+		Guide:    guide,
 	}
 
 	if err := helpers.CreateBooking(h.DB, &booking); err != nil {
 		helpers.SendErrorResponse(context, http.StatusInternalServerError, "Failed to create booking. Please try again later.")
 		return
+	}
+
+	guideData := models.GuideResponse{
+		ID:           guide.ID,
+		Name:         guide.Name,
+		Expertise:    guide.Expertise,
+		Availability: guide.Availability,
 	}
 
 	response := models.BookingResponse{
@@ -84,6 +92,7 @@ func (h *BookingHandler) CreateBooking(context *gin.Context) {
 		Datetime:  booking.Datetime,
 		Status:    booking.Status,
 		Notes:     booking.Notes,
+		Guide:     guideData,
 		CreatedAt: booking.CreatedAt,
 	}
 
